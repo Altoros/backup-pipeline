@@ -1,0 +1,21 @@
+resources:
+- name: pipeline-repo
+  type: git
+  check: 2m
+  source:
+    uri: https://github.com/Altoros/backup-pipeline.git
+    branch: master
+
+jobs:
+- name: backup-control-plane
+  plan:
+  - aggregate:
+    - get: pipeline-repo
+  - task: backup
+    file: pipeline-repo/ci/tasks/backup.yml
+    params: 
+      VAULT_ADDR: {{vault-address}}
+      VAULT_TOKEN: {{vault-token}}
+      FOUNDATION_NAME: {{foundation-name}}
+      PRODUCT_NAME: {{product-name}}
+
